@@ -13,7 +13,7 @@ const nullObject = Object.create(null);
 
 export const proxyKey = Symbol('proxy-wrapper.proxy');
 
-export const ProxyExtend = (value, extension = {}) => {
+export const ProxyExtend = (value, extension = nullObject) => {
     let target = value;
     
     let isString = false;
@@ -154,7 +154,11 @@ export const registerProxyFormatter = () => {
     
     // https://stackoverflow.com/questions/55733647/chrome-devtools-formatter-for-javascript-proxy
     if (typeof window === 'object') {
-        const formatter = {
+        if (!Array.isArray(window.devtoolsFormatters)) {
+            window.devtoolsFormatters = [];
+        }
+        
+        window.devtoolsFormatters.push({
             header(value) {
                 if (typeof value !== 'object' || value === null || !(proxyKey in value)) {
                     return null;
@@ -162,13 +166,7 @@ export const registerProxyFormatter = () => {
                 
                 return ['object', { object: value[proxyKey].value }];
             },
-        };
-        
-        if (!Array.isArray(window.devtoolsFormatters)) {
-            window.devtoolsFormatters = [];
-        }
-        
-        window.devtoolsFormatters.push(formatter);
+        });
     }
 };
 
