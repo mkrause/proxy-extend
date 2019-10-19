@@ -26,6 +26,9 @@ describe('ProxyWrapper', () => {
         const proxy = ProxyWrapper(null, { ext: 42 });
         
         expect(typeof proxy).to.equal('object');
+        
+        console.log('test', proxy, Object.getPrototypeOf(proxy));
+        
         expect(Object.getPrototypeOf(proxy)).to.equal(null);
         
         expect(proxy).to.not.equal(null); // Cannot trap equality
@@ -70,6 +73,7 @@ describe('ProxyWrapper', () => {
         
         expect(Number(proxy)).to.equal(42);
         expect(proxy.valueOf()).to.equal(42);
+        expect(+proxy).to.equal(42);
         
         expect(proxy.toJSON()).to.equal(42); // Should also support `toJSON` (to make `JSON.stringify` work)
         expect(JSON.stringify(proxy)).to.equal(`42`);
@@ -226,9 +230,10 @@ describe('ProxyWrapper', () => {
     });
     
     it('should support built-in Date', () => {
-        const proxy = ProxyWrapper(new Date('2000-12-25T03:24:00'), { ext: 42 });
+        const proxy = ProxyWrapper(new Date(977711040000), { ext: 42 });
         
         expect(proxy).to.be.an.instanceOf(Date);
+        expect(+proxy).to.equal(977711040000);
         expect(proxy.valueOf()).to.equal(977711040000);
     });
         
