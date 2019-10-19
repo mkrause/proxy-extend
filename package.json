@@ -1,0 +1,49 @@
+{
+    "name": "proxy-extend",
+    "version": "0.0.0",
+    "description": "Transparently extend a JS object with additional properties, using ES6 Proxy",
+    "keywords": [
+        "proxy",
+        "extend",
+        "object",
+        "wrapper",
+        "metadata",
+        "object",
+        "extension",
+        "es6"
+    ],
+    "author": "mkrause",
+    "license": "MIT",
+    "repository": "https://github.com/mkrause/proxy-extend",
+    "files": [
+        "src/",
+        "lib-cjs/",
+        "lib-esm/",
+        "typings/index.d.ts"
+    ],
+    "es2015": "src/index.js",
+    "main": "lib-cjs/index.js",
+    "module": "lib-esm/index.js",
+    "browser": "lib-esm/index.js",
+    "types": "./typings/index.d.ts",
+    "scripts": {
+        "build:cjs": "NODE_ENV=production BABEL_ENV=cjs babel src --out-dir lib-cjs --source-maps inline",
+        "build:esm": "NODE_ENV=production BABEL_ENV=esm babel src --out-dir lib-esm --source-maps inline",
+        "test": "NODE_ENV=development BABEL_ENV=cjs mocha --require @babel/register --recursive tests && tsd && echo '[tsd] success'",
+        "prepublishOnly": "npm run build:cjs && npm run build:esm"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.6.4",
+        "@babel/register": "^7.6.2",
+        "@babel/cli": "^7.6.4",
+        "@babel/preset-env": "^7.6.3",
+        "@babel/plugin-syntax-bigint": "^7.4.4",
+        "typescript": "^3.6.4",
+        "tsd": "^0.9.0",
+        "mocha": "^6.2.2",
+        "chai": "^4.2.0"
+    },
+    "dependencies": {
+        "message-tag": "^0.4.0"
+    }
+}

@@ -1,0 +1,9 @@
+
+language: node_js
+
+# Node releases to test against. Should include all currently supported versions. See:
+# https://nodejs.org/en/about/releases
+node_js:
+    - '8'
+    - '10'
+    - '12'
