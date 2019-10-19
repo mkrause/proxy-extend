@@ -85,6 +85,18 @@ export const ProxyExtend = (value, extension = {}) => {
                 targetProp = extension[propKey];
             } else if (propKey in target) {
                 targetProp = target[propKey];
+                
+                // Note: any getter properties will receive the `target`, rather than the proxy as their `this`
+                // value. Thus, getters will not have access to the extension. If you really need this behavior,
+                // you can use the following. But it's not recommended, due to the impact on performance.
+                /*
+                if (hasOwnProperty(target, propKey)) {
+                    const descriptor = Object.getOwnPropertyDescriptor(target, propKey);
+                    if (typeof descriptor.get === 'function') {
+                        targetProp = descriptor.get.call(receiver);
+                    }
+                }
+                */
             } else {
                 // Fallback: property is not present in either the target or extension
                 

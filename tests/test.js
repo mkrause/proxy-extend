@@ -181,18 +181,60 @@ describe('ProxyExtend', () => {
     });
     
     it('should allow getting property descriptors', () => {
-        const body = { name: 'John' };
-        const proxy = ProxyExtend(body, { ext: 42 });
+        const value = { name: 'John' };
+        const proxy = ProxyExtend(value, { ext: 42 });
         
         expect(Object.getOwnPropertyDescriptor(proxy, 'name')).to.deep.equal(
-            Object.getOwnPropertyDescriptor(body, 'name')
+            Object.getOwnPropertyDescriptor(value, 'name')
         );
         
         // Extension properties are not own properties, so should not have an own property descriptor
         expect(Object.getOwnPropertyDescriptor(proxy, 'ext')).to.equal(undefined);
     });
     
-    it('should allow spreading to get only the body properties', () => {
+    it('should work with getter properties', () => {
+        const value = {
+            firstName: 'John',
+            lastName: 'Doe',
+            get name() { return `${this.firstName} ${this.lastName}`; },
+            get nameWithExt() { return `${this.name} [ext=${this.ext}]`; },
+        };
+        const proxy = ProxyExtend(value, { ext: 42 });
+        
+        expect(proxy.name).to.equal('John Doe');
+        
+        // Getters will receive the orginal value as their `this` value. We can fix this (see the source),
+        // but doing so has a costly impact on performance, so we do not support it at the moment.
+        expect(proxy.nameWithExt).to.equal('John Doe [ext=undefined]');
+    });
+    
+    it('should work with setter properties', () => {
+        const value = {
+            firstName: 'John',
+            lastName: 'Doe',
+            set name(name) {
+                const nameParts = name.split(' ');
+                this.firstName = nameParts[0];
+                this.lastName = nameParts[1];
+            },
+            set nameWithExt(name) {
+                const nameParts = name.split(' ');
+                this.firstName = nameParts[0];
+                this.lastName = nameParts[1] + ` [ext=${this.ext}]`;
+            },
+        };
+        const proxy = ProxyExtend(value, { ext: 42 });
+        
+        proxy.name = 'Jane Smith';
+        expect(proxy.firstName).to.equal('Jane');
+        expect(proxy.lastName).to.equal('Smith');
+        
+        // Setters *do* get access to the extension
+        proxy.nameWithExt = 'Jane Smith';
+        expect(proxy.lastName).to.equal('Smith [ext=42]');
+    });
+    
+    it('should allow spreading to get only the value properties', () => {
         const proxy = ProxyExtend({ name: 'John', score: 10 }, { ext: 42 });
         
         expect({ ...proxy }).to.deep.equal({ name: 'John', score: 10 });
@@ -204,14 +246,19 @@ describe('ProxyExtend', () => {
         const proxy = ProxyExtend(nonextensible, { ext: 42 });
         
         expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
-    });
-    
-    it('should support frozen objects', () => {
-        const frozen = Object.freeze({ x: 42 });
         
-        const proxy = ProxyExtend(frozen, { ext: 42 });
+        expect(Object.isExtensible(proxy)).to.be.false;
         
-        expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
+        // Attempt to extend
+        expect(() => { proxy.foo = true; }).to.throw(TypeError, /object is not extensible/i);
+        
+        // Attempt to configure
+        Object.defineProperty(proxy, 'x', { value: 42, configurable: true });
+        expect(Object.getOwnPropertyDescriptor(proxy, 'x')).to.have.property('configurable', true); // Should work
+        
+        // Attempt to write
+        proxy.x = 43;
+        expect(proxy).to.have.property('x', 43); // Should work
     });
     
     it('should support sealed objects', () => {
@@ -220,6 +267,41 @@ describe('ProxyExtend', () => {
         const proxy = ProxyExtend(sealed, { ext: 42 });
         
         expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
+        
+        expect(Object.isExtensible(proxy)).to.be.false;
+        expect(Object.isSealed(proxy)).to.be.true;
+        
+        // Attempt to extend
+        expect(() => { proxy.foo = true; }).to.throw(TypeError, /object is not extensible/i);
+        
+        // Attempt to configure
+        expect(() => { Object.defineProperty(proxy, 'x', { value: 42, configurable: true }); })
+            .to.throw(TypeError, /cannot redefine/i);
+        
+        // Attempt to write
+        proxy.x = 43;
+        expect(proxy).to.have.property('x', 43); // Should work
+    });
+    
+    it('should support frozen objects', () => {
+        const frozen = Object.freeze({ x: 42 });
+        
+        const proxy = ProxyExtend(frozen, { ext: 42 });
+        
+        expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
+        
+        expect(Object.isExtensible(proxy)).to.be.false;
+        expect(Object.isFrozen(proxy)).to.be.true;
+        
+        // Attempt to extend
+        expect(() => { proxy.foo = true; }).to.throw(TypeError, /object is not extensible/i);
+        
+        // Attempt to configure
+        expect(() => { Object.defineProperty(proxy, 'x', { value: 42, configurable: true }); })
+            .to.throw(TypeError, /cannot redefine/i);
+        
+        // Attempt to write
+        expect(() => { proxy.x = 43; }).to.throw(TypeError, /read only/i);
     });
     
     it('should work with classes', () => {
