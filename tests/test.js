@@ -168,7 +168,12 @@ describe('ProxyExtend', () => {
         const proxy = ProxyExtend(null, { ext: 42 });
         
         expect(proxy).to.have.property('ext', 42);
-        expect(proxy.ext).to.equal(42);
+    });
+    
+    it('should override the existing property in case of name clash', () => {
+        const proxy = ProxyExtend({ x: 42 }, { x: 43 });
+        
+        expect(proxy).to.have.property('x', 43);
     });
     
     it('should allow symbols as extension keys', () => {
