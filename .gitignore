@@ -1,3 +1,6 @@
+# OS support
+.DS_Store
+
 # Tool support
 /node_modules/
 
