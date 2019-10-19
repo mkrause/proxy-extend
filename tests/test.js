@@ -252,4 +252,28 @@ describe('ProxyWrapper', () => {
         expect(proxy).to.be.an.instanceOf(RegExp);
         expect(proxy.lastIndex).to.equal(0);
     });
+    
+    it('should support non-extensible objects', () => {
+        const nonextensible = Object.preventExtensions({ x: 42 });
+        
+        const proxy = ProxyWrapper(nonextensible, { ext: 42 });
+        
+        expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
+    });
+    
+    it('should support frozen objects', () => {
+        const frozen = Object.freeze({ x: 42 });
+        
+        const proxy = ProxyWrapper(frozen, { ext: 42 });
+        
+        expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
+    });
+    
+    it('should support sealed objects', () => {
+        const sealed = Object.seal({ x: 42 });
+        
+        const proxy = ProxyWrapper(sealed, { ext: 42 });
+        
+        expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
+    });
 });
