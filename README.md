@@ -9,11 +9,14 @@ Transparently extend any JS object, using ES6 Proxy.
 
 ## Usage
 
-- ability to add metadata in a transparent way
+```js
+import ProxyWrapper from 'proxy-extend';
 
-- note: object will be made read only
+const meta = Symbol('meta');
 
+const user = { name: 'John' };
 
-## Similar libraries
-
-- https://www.npmjs.com/package/proxy-helpers
+const userWithMeta = ProxyWrapper(user, { [meta]: 'some metadata' });
+console.log(userWithMeta.name); // 'John'
+console.log(userWithMeta[meta]); // 'some metadata'
+````
