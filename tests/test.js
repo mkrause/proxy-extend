@@ -1,7 +1,7 @@
 
 import chai, { assert, expect } from 'chai';
 
-import ProxyWrapper, { proxyKey } from '../src/index.js';
+import ProxyExtend, { proxyKey } from '../src/index.js';
 
 
 const getEnumerableKeys = obj => {
@@ -11,19 +11,19 @@ const getEnumerableKeys = obj => {
     return keys;
 };
 
-describe('ProxyWrapper', () => {
+describe('ProxyExtend', () => {
     it('should return a proxy', () => {
-        const proxy = ProxyWrapper(null, { ext: 42 });
+        const proxy = ProxyExtend(null, { ext: 42 });
         
         expect(proxy).to.have.property(proxyKey);
     });
     
     it('should not allow undefined', () => {
-        expect(() => { ProxyWrapper(undefined, { ext: 42 }) }).to.throw(TypeError);
+        expect(() => { ProxyExtend(undefined, { ext: 42 }) }).to.throw(TypeError);
     });
     
     it('should simulate null as empty object', () => {
-        const proxy = ProxyWrapper(null, { ext: 42 });
+        const proxy = ProxyExtend(null, { ext: 42 });
         
         expect(typeof proxy).to.equal('object');
         
@@ -46,7 +46,7 @@ describe('ProxyWrapper', () => {
     });
     
     it('should simulate string as boxed String', () => {
-        const proxy = ProxyWrapper('foo', { ext: 42 });
+        const proxy = ProxyExtend('foo', { ext: 42 });
         
         expect(typeof proxy).to.equal('object'); // Cannot trap `typeof`, must be object
         expect(proxy).to.be.an.instanceOf(String);
@@ -75,7 +75,7 @@ describe('ProxyWrapper', () => {
     });
     
     it('should simulate number as boxed Number', () => {
-        const proxy = ProxyWrapper(42, { ext: 42 });
+        const proxy = ProxyExtend(42, { ext: 42 });
         
         expect(typeof proxy).to.equal('object'); // Cannot trap `typeof`, must be object
         expect(proxy).to.be.an.instanceOf(Number);
@@ -98,21 +98,21 @@ describe('ProxyWrapper', () => {
     // XXX disable bigint test for now, because we cannot reliably run this test on Node v8.x. We can transpile
     // with `plugin-syntax-bigint`, but we would need a transform to actually simulate bigint.
     // it('should not allow bigint', () => {
-    //     expect(() => { ProxyWrapper(10n, { ext: 42 }) }).to.throw(TypeError);
-    //     expect(() => { ProxyWrapper(10n, { ext: 42 }) }).to.throw(TypeError);
+    //     expect(() => { ProxyExtend(10n, { ext: 42 }) }).to.throw(TypeError);
+    //     expect(() => { ProxyExtend(10n, { ext: 42 }) }).to.throw(TypeError);
     // });
     
     it('should not allow boolean', () => {
-        expect(() => { ProxyWrapper(true, { ext: 42 }) }).to.throw(TypeError);
-        expect(() => { ProxyWrapper(false, { ext: 42 }) }).to.throw(TypeError);
+        expect(() => { ProxyExtend(true, { ext: 42 }) }).to.throw(TypeError);
+        expect(() => { ProxyExtend(false, { ext: 42 }) }).to.throw(TypeError);
     });
     
     it('should not allow symbol', () => {
-        expect(() => { ProxyWrapper(Symbol('symbol'), { ext: 42 }) }).to.throw(TypeError);
+        expect(() => { ProxyExtend(Symbol('symbol'), { ext: 42 }) }).to.throw(TypeError);
     });
     
     it('should support proxying arrays', () => {
-        const proxy = ProxyWrapper(['a', 'b', 'c'], { ext: 42 });
+        const proxy = ProxyExtend(['a', 'b', 'c'], { ext: 42 });
         
         expect(typeof proxy).to.equal('object');
         expect(proxy).to.be.an.instanceOf(Array);
@@ -135,7 +135,7 @@ describe('ProxyWrapper', () => {
     });
     
     it('should support proxying arrow functions', () => {
-        const proxy = ProxyWrapper((a, b) => a + b, { ext: 42 });
+        const proxy = ProxyExtend((a, b) => a + b, { ext: 42 });
         
         expect(typeof proxy).to.equal('function'); // Proxied functions get the proper `typeof`
         expect(proxy).to.be.an.instanceOf(Function);
@@ -156,7 +156,7 @@ describe('ProxyWrapper', () => {
     });
     
     it('should support proxying regular functions', () => {
-        const proxy = ProxyWrapper(function myFunc(a, b) { return a + b; }, { ext: 42 });
+        const proxy = ProxyExtend(function myFunc(a, b) { return a + b; }, { ext: 42 });
         
         expect(typeof proxy).to.equal('function'); // Proxied functions get the proper `typeof`
         expect(proxy).to.be.an.instanceOf(Function);
@@ -175,7 +175,7 @@ describe('ProxyWrapper', () => {
     });
     
     it('should allow accessing extension properties', () => {
-        const proxy = ProxyWrapper(null, { ext: 42 });
+        const proxy = ProxyExtend(null, { ext: 42 });
         
         expect(proxy).to.have.property('ext', 42);
         expect(proxy.ext).to.equal(42);
@@ -184,7 +184,7 @@ describe('ProxyWrapper', () => {
     it('should allow symbols as extension keys', () => {
         const sym = Symbol('sym');
         
-        const proxy = ProxyWrapper(null, { [sym]: 'internal' });
+        const proxy = ProxyExtend(null, { [sym]: 'internal' });
         
         expect(proxy).to.have.property(sym, 'internal');
         expect(proxy[sym]).to.equal('internal');
@@ -192,7 +192,7 @@ describe('ProxyWrapper', () => {
     
     it('should allow getting property descriptors', () => {
         const body = { name: 'John' };
-        const proxy = ProxyWrapper(body, { ext: 42 });
+        const proxy = ProxyExtend(body, { ext: 42 });
         
         expect(Object.getOwnPropertyDescriptor(proxy, 'name')).to.deep.equal(
             Object.getOwnPropertyDescriptor(body, 'name')
@@ -206,7 +206,7 @@ describe('ProxyWrapper', () => {
     });
     
     it('should allow spreading to get only the body properties', () => {
-        const proxy = ProxyWrapper({ name: 'John', score: 10 }, { ext: 42 });
+        const proxy = ProxyExtend({ name: 'John', score: 10 }, { ext: 42 });
         
         expect({ ...proxy }).to.deep.equal({ name: 'John', score: 10 });
     });
@@ -218,7 +218,7 @@ describe('ProxyWrapper', () => {
             }
         }
         
-        const proxy = ProxyWrapper(new User('John'), { ext: 42 });
+        const proxy = ProxyExtend(new User('John'), { ext: 42 });
         
         expect(proxy).to.be.an.instanceOf(User);
     });
@@ -230,7 +230,7 @@ describe('ProxyWrapper', () => {
             }
         }
         
-        const proxy = ProxyWrapper(User, { ext: 42 });
+        const proxy = ProxyExtend(User, { ext: 42 });
         
         expect(typeof proxy).to.equal('function');
         
@@ -239,7 +239,7 @@ describe('ProxyWrapper', () => {
     });
     
     it('should support built-in Date', () => {
-        const proxy = ProxyWrapper(new Date(977711040000), { ext: 42 });
+        const proxy = ProxyExtend(new Date(977711040000), { ext: 42 });
         
         expect(proxy).to.be.an.instanceOf(Date);
         expect(+proxy).to.equal(977711040000);
@@ -247,7 +247,7 @@ describe('ProxyWrapper', () => {
     });
         
     it('should support built-in RegExp', () => {
-        const proxy = ProxyWrapper(/foo/, { ext: 42 });
+        const proxy = ProxyExtend(/foo/, { ext: 42 });
         
         expect(proxy).to.be.an.instanceOf(RegExp);
         expect(proxy.lastIndex).to.equal(0);
@@ -256,7 +256,7 @@ describe('ProxyWrapper', () => {
     it('should support non-extensible objects', () => {
         const nonextensible = Object.preventExtensions({ x: 42 });
         
-        const proxy = ProxyWrapper(nonextensible, { ext: 42 });
+        const proxy = ProxyExtend(nonextensible, { ext: 42 });
         
         expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
     });
@@ -264,7 +264,7 @@ describe('ProxyWrapper', () => {
     it('should support frozen objects', () => {
         const frozen = Object.freeze({ x: 42 });
         
-        const proxy = ProxyWrapper(frozen, { ext: 42 });
+        const proxy = ProxyExtend(frozen, { ext: 42 });
         
         expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
     });
@@ -272,7 +272,7 @@ describe('ProxyWrapper', () => {
     it('should support sealed objects', () => {
         const sealed = Object.seal({ x: 42 });
         
-        const proxy = ProxyWrapper(sealed, { ext: 42 });
+        const proxy = ProxyExtend(sealed, { ext: 42 });
         
         expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
     });

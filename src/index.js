@@ -10,8 +10,8 @@ Similar:
 /*
 Transparently wraps any value, with the exception of:
 
-  - Equality will not work: `ProxyWrapper(42) !== 42`.
-  - `typeof` will return `object` for strings/numbers (these are "boxed"): `typeof ProxyWrapper(42) -== 'object'`.
+  - Equality will not work: `ProxyExtend(42) !== 42`.
+  - `typeof` will return `object` for strings/numbers (these are "boxed"): `typeof ProxyExtend(42) -== 'object'`.
     (`instanceof` on the other hand will work fine.)
 */
 
@@ -175,7 +175,7 @@ const handlerMethods = {
     deleteProperty() { throw new TypeError('Unsupported operation: cannot delete property'); },
 };
 
-export const ProxyWrapper = (value, extension = {}) => {
+export const ProxyExtend = (value, extension = {}) => {
     let body = value;
     
     // Handle primitive values. Because a Proxy always behaves as an object, we cannot really transparently
@@ -251,4 +251,4 @@ export const registerProxyFormatter = () => {
 };
 
 
-export default ProxyWrapper;
+export default ProxyExtend;
