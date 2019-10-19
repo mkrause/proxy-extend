@@ -16,6 +16,7 @@ describe('ProxyExtend', () => {
         const proxy = ProxyExtend(null, { ext: 42 });
         
         expect(proxy).to.have.property(proxyKey);
+        expect(proxy[proxyKey]).to.deep.equal({ value: null, extension: { ext: 42 } });
     });
     
     it('should not allow undefined', () => {
@@ -27,18 +28,7 @@ describe('ProxyExtend', () => {
         
         expect(typeof proxy).to.equal('object');
         
-        try {
-            expect(Object.getPrototypeOf(proxy)).to.equal(null);
-        } catch (e) {
-            // This is a known bug in V8 v7.7 (the version shipping in Node v12 up to at least v12.12):
-            // https://bugs.chromium.org/p/v8/issues/detail?id=9781
-            // Returning `null` from the `getPrototypeOf` trap triggers an exception even though it shouldn't.
-            if (/trap returned neither object nor null/.test(e.message)) {
-                // ignore
-            } else {
-                throw e;
-            }
-        }
+        expect(Object.getPrototypeOf(proxy)).to.equal(null);
         
         expect(proxy).to.not.equal(null); // Cannot trap equality
         expect(Reflect.ownKeys(proxy)).to.deep.equal([]); // Should be empty
@@ -66,9 +56,9 @@ describe('ProxyExtend', () => {
         const enumerableKeys = getEnumerableKeys(proxy);
         expect(enumerableKeys).to.deep.equal(['0', '1', '2']);
         
-        // We need these own properties to be reported as configurable
-        expect(Reflect.getOwnPropertyDescriptor(proxy, '0')).to.have.property('configurable', true);
-        expect(Reflect.getOwnPropertyDescriptor(proxy, 'length')).to.have.property('configurable', true);
+        // Should be reported as non-configurable
+        expect(Reflect.getOwnPropertyDescriptor(proxy, '0')).to.have.property('configurable', false);
+        expect(Reflect.getOwnPropertyDescriptor(proxy, 'length')).to.have.property('configurable', false);
         
         // Iteration (will result in a lookup for `Symbol.iterator`)
         expect([...proxy]).to.deep.equal(['f', 'o', 'o']);
@@ -127,8 +117,8 @@ describe('ProxyExtend', () => {
         const enumerableKeys = getEnumerableKeys(proxy);
         expect(enumerableKeys).to.deep.equal(['0', '1', '2']);
         
-        // We need `length` to be reported as configurable
-        expect(Reflect.getOwnPropertyDescriptor(proxy, 'length')).to.have.property('configurable', true);
+        // Should be reported as non-configurable
+        expect(Reflect.getOwnPropertyDescriptor(proxy, 'length')).to.have.property('configurable', false);
         
         // Iteration (will result in a lookup for `Symbol.iterator`)
         expect([...proxy]).to.deep.equal(['a', 'b', 'c']);
@@ -197,18 +187,39 @@ describe('ProxyExtend', () => {
         expect(Object.getOwnPropertyDescriptor(proxy, 'name')).to.deep.equal(
             Object.getOwnPropertyDescriptor(body, 'name')
         );
-        expect(Object.getOwnPropertyDescriptor(proxy, 'ext')).to.deep.equal({
-            value: 42,
-            enumerable: false,
-            configurable: true,
-            writable: false,
-        });
+        
+        // Extension properties are not own properties, so should not have an own property descriptor
+        expect(Object.getOwnPropertyDescriptor(proxy, 'ext')).to.equal(undefined);
     });
     
     it('should allow spreading to get only the body properties', () => {
         const proxy = ProxyExtend({ name: 'John', score: 10 }, { ext: 42 });
         
         expect({ ...proxy }).to.deep.equal({ name: 'John', score: 10 });
+    });
+    
+    it('should support non-extensible objects', () => {
+        const nonextensible = Object.preventExtensions({ x: 42 });
+        
+        const proxy = ProxyExtend(nonextensible, { ext: 42 });
+        
+        expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
+    });
+    
+    it('should support frozen objects', () => {
+        const frozen = Object.freeze({ x: 42 });
+        
+        const proxy = ProxyExtend(frozen, { ext: 42 });
+        
+        expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
+    });
+    
+    it('should support sealed objects', () => {
+        const sealed = Object.seal({ x: 42 });
+        
+        const proxy = ProxyExtend(sealed, { ext: 42 });
+        
+        expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
     });
     
     it('should work with classes', () => {
@@ -253,27 +264,17 @@ describe('ProxyExtend', () => {
         expect(proxy.lastIndex).to.equal(0);
     });
     
-    it('should support non-extensible objects', () => {
-        const nonextensible = Object.preventExtensions({ x: 42 });
+    it('should support built-in Map', () => {
+        const proxy = ProxyExtend(new Map([['x', 42], ['y', 10]]), { ext: 42 });
         
-        const proxy = ProxyExtend(nonextensible, { ext: 42 });
-        
-        expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
+        expect(proxy).to.be.an.instanceOf(Map);
+        expect(proxy.get('x')).to.equal(42);
     });
     
-    it('should support frozen objects', () => {
-        const frozen = Object.freeze({ x: 42 });
+    it('should support built-in Set', () => {
+        const proxy = ProxyExtend(new Set([1, 2, 3]), { ext: 42 });
         
-        const proxy = ProxyExtend(frozen, { ext: 42 });
-        
-        expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
-    });
-    
-    it('should support sealed objects', () => {
-        const sealed = Object.seal({ x: 42 });
-        
-        const proxy = ProxyExtend(sealed, { ext: 42 });
-        
-        expect(Reflect.ownKeys(proxy)).to.deep.equal(['x']);
+        expect(proxy).to.be.an.instanceOf(Set);
+        expect(proxy.has(2)).to.equal(true);
     });
 });
