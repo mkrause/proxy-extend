@@ -5,10 +5,10 @@ import $msg from 'message-tag';
 // Version of `hasOwnProperty` that doesn't conflict with an own property
 const hasOwnProperty = (obj, propKey) => Object.prototype.hasOwnProperty.call(obj, propKey);
 
-// Cached values
-const nodeInspectCustom = Symbol.for('nodejs.util.inspect.custom');
-const TypedArray = Object.getPrototypeOf(Int8Array);
+// Cache some values
 const nullObject = Object.create(null);
+const TypedArray = Object.getPrototypeOf(Int8Array);
+const nodeInspectCustom = Symbol.for('nodejs.util.inspect.custom');
 
 
 export const proxyKey = Symbol('proxy-wrapper.proxy');
@@ -87,6 +87,10 @@ export const ProxyExtend = (value, extension = nullObject) => {
         get: {
             enumerable: false,
             value: (target, propKey, receiver) => {
+                // Backdoor to get the original value, and the extension.
+                // Note: use `value` here, not `target` (target is just an internal representation).
+                if (propKey === proxyKey) { return { value, extension }; }
+                
                 let targetProp = undefined;
                 if (hasOwnProperty(extension, propKey)) {
                     targetProp = extension[propKey];
@@ -116,11 +120,7 @@ export const ProxyExtend = (value, extension = nullObject) => {
                         }
                     }
                     
-                    if (propKey === nodeInspectCustom) { return () => target; }
-                    
-                    // Backdoor to get the original value, and the extension.
-                    // Note: use `value` here, not `target` (target is just an internal representation).
-                    if (propKey === proxyKey) { return { value, extension }; }
+                    if (propKey === nodeInspectCustom) { targetProp = () => target; }
                 }
                 
                 if (typeof targetProp === 'function') {

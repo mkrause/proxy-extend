@@ -176,6 +176,15 @@ describe('ProxyExtend', () => {
         expect(proxy).to.have.property('x', 43);
     });
     
+    it('should not allow proxyKey to be overridden', () => {
+        const proxy = ProxyExtend({ [proxyKey]: 42 }, { [proxyKey]: 43 });
+        
+        expect(proxy[proxyKey]).to.deep.equal({
+            value: { [proxyKey]: 42 },
+            extension: { [proxyKey]: 43 },
+        });
+    });
+    
     it('should allow symbols as extension keys', () => {
         const sym = Symbol('sym');
         
