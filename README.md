@@ -61,6 +61,25 @@ userExtended[meta]; // 'some metadata'
 
 Due to the nature of `Proxy`, we can only use an object as target value. This library supports any JS object, including plain objects, arrays, functions, and class constructors. We also support a few kinds of primitives by emulating them using objects:
 
-* `null` (using an empty object)
+* `null` (using an empty object with `null` prototype)
 * Strings (using boxed `String`)
 * Numbers (using boxed `Number`)
+
+Checking reference equality will no longer work. That includes primitives as well:
+
+```js
+const value = { x: 42 };
+const proxy = ProxyExtend(value);
+
+value !== proxy; // Reference equality does not hold
+
+const proxyString = ProxyExtend('foo');
+proxyString !== 'foo'; // Won't work
+String(proxyString) === 'foo'; // Cast to string first instead
+```
+
+
+## Similar libraries
+
+- [proxy-merge](https://www.npmjs.com/package/proxy-merge)
+- [proxy-link](https://www.npmjs.com/package/proxy-link)
