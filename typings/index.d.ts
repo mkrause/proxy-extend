@@ -1,4 +1,5 @@
 
+// Note: `ts-toolbelt` needs to be a normal dependency (not devdependency)
 import { Object as ObjectTB } from 'ts-toolbelt';
 
 
