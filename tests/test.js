@@ -345,6 +345,13 @@ describe('ProxyExtend', () => {
         expect(instance).to.be.an.instanceOf(User);
     });
     
+    it('should support built-in Error', () => {
+        const proxy = ProxyExtend(new Error('some error'), { ext: 42 });
+        
+        expect(proxy).to.be.an.instanceOf(Error);
+        expect(proxy.message).to.equal('some error');
+    });
+    
     it('should support built-in Date', () => {
         const proxy = ProxyExtend(new Date(977711040000), { ext: 42 });
         
