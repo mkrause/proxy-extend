@@ -38,8 +38,8 @@ const userExtended = ProxyExtend(user, { status: 'ready' });
 userExtended.name; // 'John'
 ({ ...userExtended }); // { name: 'John' }
 
-// But we can also access our annotation, if we know the name of the key
-userExtended.status; // { status: 'ready' }
+// But we can also access our annotation, if we know the key
+userExtended.status; // 'ready'
 ````
 
 To make sure that we do not conflict with any existing properties on the original value, it is useful to use a [Symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol) as the key of the annotation:
