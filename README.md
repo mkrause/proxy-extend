@@ -20,7 +20,7 @@ const someValueAnnotated = {
 };
 ```
 
-One drawback of using a wrapper object, is that the newly annotated value now has a different interface from the original. That means that any consuming code will need to know about the wrapper and "unwrap" it do anything with it.
+One drawback of using a wrapper object, is that the newly annotated value now has a different interface from the original. That means that any consuming code will need to know about the wrapper and "unwrap" it to do anything with it.
 
 Using [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), we can make the wrapper have the same interface as the original value, allowing us to pass the wrapped value to any consuming code without the consumer needing to know whether it has been proxied or not.
 
