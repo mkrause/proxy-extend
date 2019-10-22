@@ -27,9 +27,15 @@ Using [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 
 ## Usage
 
+To import the library:
+
 ```js
 import extend from 'proxy-extend';
+````
 
+Basic usage:
+
+```js
 const user = { name: 'John' }; // Some value to be extended
 
 const userExtended = extend(user, { status: 'ready' });
@@ -40,13 +46,11 @@ userExtended.name; // 'John'
 
 // But we can also access our annotation, if we know the key
 userExtended.status; // 'ready'
-````
+```
 
 To make sure that we do not conflict with any existing properties on the original value, it is useful to use a [Symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol) as the key of the annotation:
 
 ```js
-import extend from 'proxy-extend';
-
 const user = { name: 'John' };
 
 const meta = Symbol('meta'); // Private symbol
@@ -54,18 +58,40 @@ const meta = Symbol('meta'); // Private symbol
 const userExtended = extend(user, { [meta]: 'some metadata' });
 userExtended.name; // 'John'
 userExtended[meta]; // 'some metadata'
-````
+```
+
+Prototypes are conserved:
+
+```js
+class User {
+    constructor(name) {
+        this.name = name;
+    }
+}
+
+const meta = Symbol('meta'); // Private symbol
+
+const userExtended = extend(new User('John'), { [meta]: 'some metadata' });
+userExtended instanceof User; // true
+userExtended[meta]; // 'some metadata'
+```
+
+Can also proxy functions and constructors:
+
+```js
+const fn = (a, b) => a + b;
+extend(fn)(2, 3) === 5; // Works
+
+class MyClass {}
+new extend(MyClass); // Works
+```
 
 
 ## Limitations
 
-Due to the nature of `Proxy`, we can only use an object as target value. This library supports any JS object, including plain objects, arrays, functions, and class constructors. We also support a few kinds of primitives by emulating them using objects:
+**Reference equality**
 
-* `null` (using an empty object with `null` prototype)
-* Strings (using boxed `String`)
-* Numbers (using boxed `Number`)
-
-Checking reference equality will no longer work. That includes primitives as well:
+You cannot use `==` to check equality, the proxy is a different reference by necessity:
 
 ```js
 const value = { x: 42 };
@@ -73,10 +99,19 @@ const proxy = extend(value);
 
 value !== proxy; // Reference equality does not hold
 
+// For primitives as well:
 const proxyString = extend('foo');
 proxyString !== 'foo'; // Won't work
 String(proxyString) === 'foo'; // Cast to string first instead
 ```
+
+**Primitives**
+
+Due to the nature of `Proxy`, we can only use an object as target value. This library supports any JS object, including plain objects, arrays, functions, and class constructors. We also support a few kinds of primitives by emulating them using objects:
+
+* `null` (using an empty object, with `null` prototype)
+* Strings (using boxed `String`)
+* Numbers (using boxed `Number`)
 
 
 ## Similar libraries
