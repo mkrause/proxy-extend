@@ -53,6 +53,7 @@ export const extend = (value, extension = nullObject) => {
     const usesInternalSlots =
         target instanceof String
         || target instanceof Number
+        || target instanceof Boolean
         || target instanceof Date
         || target instanceof RegExp
         || target instanceof Map
