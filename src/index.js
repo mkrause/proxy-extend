@@ -35,13 +35,13 @@ export const extend = (value, extension = nullObject) => {
         throw new TypeError($msg`Cannot construct proxy from bigint, given ${value}`);
     } else if (typeof value === 'boolean') {
         // Note: we could use a boxed `Boolean`, but it would not be very useful because there's not much you can
-        // do with it. Both boxed booleans (including `new Boolean(false)`) are treated as truthy in logic operations.
+        // do with it. Boxed booleans (including `new Boolean(false)`) are treated as truthy in logic operations.
         throw new TypeError($msg`Cannot construct proxy from boolean, given ${value}`);
     } else if (typeof value === 'symbol') {
         throw new TypeError($msg`Cannot construct proxy from symbol, given ${value}`);
     } else if (typeof value !== 'object' && typeof value !== 'function') {
         // Note: this shouldn't happen, unless there's a new type of primitive added to JS
-        throw new TypeError($msg`Cannot construct proxy, given value of unknown type: ${value}`);
+        throw new TypeError($msg`Cannot construct proxy, given value of unknown type ${typeof value}`);
     }
     
     // Some methods of built-in types cannot be proxied, i.e. they need to bound directly to the
