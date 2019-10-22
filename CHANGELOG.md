@@ -1,6 +1,9 @@
 
 # Changelog
 
+- v0.3.*
+  - Rename the default export: `ProxyExtend` -> `extend`.
+
 - v0.2.*
   - Add TypeScript support.
 
