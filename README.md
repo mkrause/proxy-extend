@@ -91,7 +91,7 @@ new extend(MyClass); // Works
 
 **Reference equality**
 
-You cannot use `==` to check equality, the proxy is a different reference by necessity:
+You cannot use `==` to check equality, the proxy is a different reference:
 
 ```js
 const value = { x: 42 };
