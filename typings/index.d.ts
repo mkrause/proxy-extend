@@ -23,9 +23,9 @@ export type Proxied<V extends Value, E extends Extension = {}> =
 
 export declare const proxyKey : unique symbol;
 
-export declare const ProxyExtend : <V extends Value, E extends Extension = {}>(value : V, extension ?: E)
+export declare const extend : <V extends Value, E extends Extension = {}>(value : V, extension ?: E)
     => Proxied<V, E>;
 
 export declare const registerProxyFormatter : () => void;
 
-export default ProxyExtend;
+export default extend;

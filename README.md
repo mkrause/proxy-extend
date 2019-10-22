@@ -28,11 +28,11 @@ Using [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 ## Usage
 
 ```js
-import ProxyExtend from 'proxy-extend';
+import extend from 'proxy-extend';
 
 const user = { name: 'John' }; // Some value to be extended
 
-const userExtended = ProxyExtend(user, { status: 'ready' });
+const userExtended = extend(user, { status: 'ready' });
 
 // The extended value has the same interface as the original
 userExtended.name; // 'John'
@@ -45,13 +45,13 @@ userExtended.status; // 'ready'
 To make sure that we do not conflict with any existing properties on the original value, it is useful to use a [Symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol) as the key of the annotation:
 
 ```js
-import ProxyExtend from 'proxy-extend';
+import extend from 'proxy-extend';
 
 const user = { name: 'John' };
 
 const meta = Symbol('meta'); // Private symbol
 
-const userExtended = ProxyExtend(user, { [meta]: 'some metadata' });
+const userExtended = extend(user, { [meta]: 'some metadata' });
 userExtended.name; // 'John'
 userExtended[meta]; // 'some metadata'
 ````
@@ -69,11 +69,11 @@ Checking reference equality will no longer work. That includes primitives as wel
 
 ```js
 const value = { x: 42 };
-const proxy = ProxyExtend(value);
+const proxy = extend(value);
 
 value !== proxy; // Reference equality does not hold
 
-const proxyString = ProxyExtend('foo');
+const proxyString = extend('foo');
 proxyString !== 'foo'; // Won't work
 String(proxyString) === 'foo'; // Cast to string first instead
 ```

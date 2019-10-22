@@ -13,7 +13,7 @@ const nodeInspectCustom = Symbol.for('nodejs.util.inspect.custom');
 
 export const proxyKey = Symbol('proxy-wrapper.proxy');
 
-export const ProxyExtend = (value, extension = nullObject) => {
+export const extend = (value, extension = nullObject) => {
     let target = value;
     
     let isString = false;
@@ -171,4 +171,4 @@ export const registerProxyFormatter = () => {
 };
 
 
-export default ProxyExtend;
+export default extend;
