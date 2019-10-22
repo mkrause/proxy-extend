@@ -359,7 +359,7 @@ describe('extend', () => {
         expect(+proxy).to.equal(977711040000);
         expect(proxy.valueOf()).to.equal(977711040000);
     });
-        
+    
     it('should support built-in RegExp', () => {
         const proxy = extend(/foo/, { ext: 42 });
         
