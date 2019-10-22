@@ -14,10 +14,21 @@ b.suite(
         };
     }),
     
+    b.add('With bare Proxy', () => {
+        const str = 'foo';
+        const value = new Proxy(new String(str), {});
+        
+        return () => {
+            // Need to explicitly `call` to set the right `this` value
+            value.toString.call(str);
+        };
+    }),
+    
     b.add('With proxy-extend', () => {
         const value = extend('foo');
         
         return () => {
+            // Will create a new bound function on every invocation
             value.toString();
         };
     }),
