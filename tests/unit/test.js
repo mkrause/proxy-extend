@@ -1,7 +1,7 @@
 
 import chai, { assert, expect } from 'chai';
 
-import extend, { proxyKey } from '../src/index.js';
+import extend, { proxyKey } from '../../src/index.js';
 
 
 const getEnumerableKeys = obj => {

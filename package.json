@@ -29,7 +29,8 @@
     "scripts": {
         "build:cjs": "NODE_ENV=production BABEL_ENV=cjs babel src --out-dir lib-cjs --source-maps inline",
         "build:esm": "NODE_ENV=production BABEL_ENV=esm babel src --out-dir lib-esm --source-maps inline",
-        "test": "NODE_ENV=development BABEL_ENV=cjs mocha --require @babel/register --recursive tests && tsd && echo '[tsd] success'",
+        "test": "NODE_ENV=development BABEL_ENV=cjs mocha --require @babel/register --recursive tests/unit && tsd && echo '[tsd] success'",
+        "test:perf": "NODE_ENV=development node tests/perf",
         "prepublishOnly": "npm run build:cjs && npm run build:esm"
     },
     "devDependencies": {
@@ -40,7 +41,8 @@
         "typescript": "^3.6.4",
         "tsd": "^0.9.0",
         "mocha": "^6.2.2",
-        "chai": "^4.2.0"
+        "chai": "^4.2.0",
+        "benny": "^3.6.13"
     },
     "dependencies": {
         "ts-toolbelt": "^4.8.22",

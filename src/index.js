@@ -21,27 +21,28 @@ export const extend = (value, extension = nullObject) => {
     
     // Handle primitive values. Because a Proxy always behaves as an object, we cannot really transparently
     // "simulate" a primitive. However, we use sensible equivalents where possible.
+    const valueType = typeof value;
     if (target === undefined) {
         throw new TypeError($msg`Cannot construct proxy, given \`undefined\``);
     } else if (target === null) {
         target = nullObject;
-    } else if (typeof value === 'string') {
+    } else if (valueType === 'string') {
         target = new String(value);
         isString = true;
-    } else if (typeof value === 'number') {
+    } else if (valueType === 'number') {
         target = new Number(value);
         isNumber = true;
-    } else if (typeof value === 'bigint') {
+    } else if (valueType === 'bigint') {
         throw new TypeError($msg`Cannot construct proxy from bigint, given ${value}`);
-    } else if (typeof value === 'boolean') {
+    } else if (valueType === 'boolean') {
         // Note: we could use a boxed `Boolean`, but it would not be very useful because there's not much you can
         // do with it. Boxed booleans (including `new Boolean(false)`) are treated as truthy in logic operations.
         throw new TypeError($msg`Cannot construct proxy from boolean, given ${value}`);
-    } else if (typeof value === 'symbol') {
+    } else if (valueType === 'symbol') {
         throw new TypeError($msg`Cannot construct proxy from symbol, given ${value}`);
-    } else if (typeof value !== 'object' && typeof value !== 'function') {
+    } else if (valueType !== 'object' && valueType !== 'function') {
         // Note: this shouldn't happen, unless there's a new type of primitive added to JS
-        throw new TypeError($msg`Cannot construct proxy, given value of unknown type ${typeof value}`);
+        throw new TypeError($msg`Cannot construct proxy, given value of unknown type ${valueType}`);
     }
     
     // Some methods of built-in types cannot be proxied, i.e. they need to bound directly to the
@@ -65,79 +66,73 @@ export const extend = (value, extension = nullObject) => {
     
     
     // Note: make non-enumerable, so it doesn't clutter up inspectors
-    const handler = Object.create(null, {
-        has: {
-            enumerable: false,
-            value: (target, propKey) => {
-                if (hasOwnProperty(extension, propKey)) {
-                    // Note: use `hasOwnProperty` for the extension, rather than `in`, because we do not want to
-                    // consider properties in the prototype chain as being part of the extension.
-                    return true;
-                }
-                
-                // Implement `toJSON` for boxed primitives (otherwise `JSON.stringify` will not work properly).
-                if (propKey === 'toJSON' && (isString || isNumber)) { return true; }
-                
-                if (propKey === nodeInspectCustom) { return true; }
-                if (propKey === proxyKey) { return true; }
-                
-                return Reflect.has(target, propKey);
-            },
+    const handler = {
+        has(target, propKey) {
+            if (hasOwnProperty(extension, propKey)) {
+                // Note: use `hasOwnProperty` for the extension, rather than `in`, because we do not want to
+                // consider properties in the prototype chain as being part of the extension.
+                return true;
+            }
+            
+            // Implement `toJSON` for boxed primitives (otherwise `JSON.stringify` will not work properly).
+            if (propKey === 'toJSON' && (isString || isNumber)) { return true; }
+            
+            if (propKey === nodeInspectCustom) { return true; }
+            if (propKey === proxyKey) { return true; }
+            
+            return Reflect.has(target, propKey);
         },
         
-        get: {
-            enumerable: false,
-            value: (target, propKey, receiver) => {
-                // Backdoor to get the original value, and the extension.
-                // Note: use `value` here, not `target` (target is just an internal representation).
-                if (propKey === proxyKey) { return { value, extension }; }
+        get(target, propKey, receiver) {
+            // Backdoor to get the original value, and the extension.
+            // Note: use `value` here, not `target` (target is just an internal representation).
+            if (propKey === proxyKey) { return { value, extension }; }
+            
+            let targetProp = undefined;
+            if (hasOwnProperty(extension, propKey)) {
+                targetProp = extension[propKey];
+            } else if (propKey in target) {
+                targetProp = target[propKey];
                 
-                let targetProp = undefined;
-                if (hasOwnProperty(extension, propKey)) {
-                    targetProp = extension[propKey];
-                } else if (propKey in target) {
-                    targetProp = target[propKey];
-                    
-                    // Note: any getter properties will receive the `target`, rather than the proxy as their `this`
-                    // value. Thus, getters will not have access to the extension. If you really need this behavior,
-                    // you can use the following. But it's not recommended, due to the impact on performance.
-                    /*
-                    if (hasOwnProperty(target, propKey)) {
-                        const descriptor = Object.getOwnPropertyDescriptor(target, propKey);
-                        if (typeof descriptor.get === 'function') {
-                            targetProp = descriptor.get.call(receiver);
-                        }
+                // Note: any getter properties will receive the `target`, rather than the proxy as their `this`
+                // value. Thus, getters will not have access to the extension. If you really need this behavior,
+                // you can use the following. But it's not recommended, due to the impact on performance.
+                /*
+                if (hasOwnProperty(target, propKey)) {
+                    const descriptor = Object.getOwnPropertyDescriptor(target, propKey);
+                    if (typeof descriptor.get === 'function') {
+                        targetProp = descriptor.get.call(receiver);
                     }
-                    */
-                } else {
-                    // Fallback: property is not present in either the target or extension
-                    
-                    // Implement `toJSON` for boxed primitives (otherwise `JSON.stringify` will not work properly).
-                    if (propKey === 'toJSON') {
-                        if (isString) {
-                            targetProp = target.toString.bind(target);
-                        } else if (isNumber) {
-                            targetProp = target.valueOf.bind(target);
-                        }
+                }
+                */
+            } else {
+                // Fallback: property is not present in either the target or extension
+                
+                // Implement `toJSON` for boxed primitives (otherwise `JSON.stringify` will not work properly).
+                if (propKey === 'toJSON') {
+                    if (isString) {
+                        targetProp = target.toString.bind(target);
+                    } else if (isNumber) {
+                        targetProp = target.valueOf.bind(target);
                     }
-                    
-                    if (propKey === nodeInspectCustom) { targetProp = () => target; }
                 }
                 
-                if (typeof targetProp === 'function') {
-                    if (usesInternalSlots) {
-                        // Have `this` bound to the original target
-                        return targetProp.bind(target);
-                    } else {
-                        // Unbound (i.e. `this` can be bound to anything, usually will be the proxy object)
-                        return targetProp;
-                    }
+                if (propKey === nodeInspectCustom) { targetProp = () => target; }
+            }
+            
+            if (typeof targetProp === 'function') {
+                if (usesInternalSlots) {
+                    // Have `this` bound to the original target
+                    return targetProp.bind(target);
                 } else {
+                    // Unbound (i.e. `this` can be bound to anything, usually will be the proxy object)
                     return targetProp;
                 }
-            },
+            } else {
+                return targetProp;
+            }
         },
-    });
+    };
     
     return new Proxy(target, handler);
 };
