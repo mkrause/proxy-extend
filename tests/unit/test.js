@@ -199,6 +199,18 @@ describe('extend', () => {
         });
     });
     
+    it('should allow checking reference equality through `proxyKey`', () => {
+        const subject = { name: 'John' };
+        const proxy = extend(subject, {
+            ext: 42,
+            is(other) { return this[proxyKey].value === other; },
+        });
+        
+        expect(proxy).to.not.equal(subject);
+        expect(proxy.is(subject)).to.be.true;
+    });
+    
+    
     it('should allow getting property descriptors', () => {
         const value = { name: 'John' };
         const proxy = extend(value, { ext: 42 });

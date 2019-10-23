@@ -89,7 +89,37 @@ new extend(MyClass); // Works
 ```
 
 
+## API
+
+```js
+import extend, { proxyKey } from 'proxy-extend';
+```
+
+* ```js
+  extend(value, extension = {})
+  ```
+  Returns a proxy representing the given `value`, extended with the properties of the `extension`. If `value` is already a proxy (created using `extend`), it will flatten the result to prevent nested proxies.
+  
+* ```js
+  proxyKey
+  ```
+  A unique symbol that can be used to retrieve the original value and extension:
+  
+  ```js
+  proxy[proxyKey].value; // The original value
+  proxy[proxyKey].extension; // The extension object
+  ```
+
+
 ## Limitations
+
+**Primitives**
+
+Due to the nature of `Proxy`, we can only use an object as target value. This library supports any JS object, including plain objects, arrays, functions, and class constructors. We also support a few kinds of primitives by emulating them using objects:
+
+* `null` (using an empty object, with `null` prototype)
+* Strings (using boxed `String`)
+* Numbers (using boxed `Number`)
 
 **Reference equality**
 
@@ -100,20 +130,32 @@ const value = { x: 42 };
 const proxy = extend(value);
 
 value !== proxy; // Reference equality does not hold
-
-// For primitives as well:
-const proxyString = extend('foo');
-proxyString !== 'foo'; // Won't work
-String(proxyString) === 'foo'; // Cast to string first instead
 ```
 
-**Primitives**
+Instead, you can use `proxyKey` to access the original value:
 
-Due to the nature of `Proxy`, we can only use an object as target value. This library supports any JS object, including plain objects, arrays, functions, and class constructors. We also support a few kinds of primitives by emulating them using objects:
+```js
+import extend, { proxyKey } from 'proxy-extend';
 
-* `null` (using an empty object, with `null` prototype)
-* Strings (using boxed `String`)
-* Numbers (using boxed `Number`)
+proxy[proxyKey].value === value;
+
+// Or, you may want to add a convenience method:
+const value = { x: 42 };
+const proxy = extend(value, {
+    is(other) { return this[proxyKey].value === other; },
+});
+proxy.is(value) === true;
+```
+
+For primitives, you can use `.valueOf()`, or a constructor:
+
+```js
+const proxyString = extend('foo');
+proxyString !== 'foo'; // Won't work
+
+proxyString.valueOf() === 'foo'; // Get primitive value
+String(proxyString) === 'foo'; // Or, cast to string using `String` constructor
+```
 
 
 ## Similar libraries
