@@ -3,6 +3,7 @@
     "version": "0.4.0",
     "description": "Transparently extend a JS object with additional properties (using ES6 Proxy)",
     "keywords": [
+        "es6",
         "proxy",
         "extend",
         "object",
@@ -10,7 +11,9 @@
         "metadata",
         "object",
         "extension",
-        "es6"
+        "annotate",
+        "annotation",
+        "typescript"
     ],
     "author": "mkrause",
     "license": "MIT",

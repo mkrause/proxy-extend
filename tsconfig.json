@@ -1,0 +1,14 @@
+{
+    "exclude": [
+        "node_modules",
+    ],
+    "include": [
+        "src/**/*",
+    ],
+    "compilerOptions": {
+        "noEmit": true,
+        "lib": ["es2018"],
+        "allowJs": false,
+        "strict": true,
+    },
+}
