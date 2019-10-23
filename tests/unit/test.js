@@ -176,15 +176,6 @@ describe('extend', () => {
         expect(proxy).to.have.property('x', 43);
     });
     
-    it('should not allow proxyKey to be overridden', () => {
-        const proxy = extend({ [proxyKey]: 42 }, { [proxyKey]: 43 });
-        
-        expect(proxy[proxyKey]).to.deep.equal({
-            value: { [proxyKey]: 42 },
-            extension: { [proxyKey]: 43 },
-        });
-    });
-    
     it('should allow symbols as extension keys', () => {
         const sym = Symbol('sym');
         
@@ -192,6 +183,20 @@ describe('extend', () => {
         
         expect(proxy).to.have.property(sym, 'internal');
         expect(proxy[sym]).to.equal('internal');
+    });
+    
+    it('should flatten nested proxies', () => {
+        const subproxy = extend({ name: 'John' }, { ext1: 1, ext2: 2 });
+        const proxy = extend(subproxy, { ext2: 'override' });
+        
+        expect(proxy).to.have.property('name', 'John');
+        expect(proxy).to.deep.equal({ name: 'John' });
+        expect(proxy).to.have.property('ext1', 1);
+        expect(proxy).to.have.property('ext2', 'override');
+        expect(proxy[proxyKey]).to.deep.equal({
+            value: { name: 'John' },
+            extension: { ext1: 1, ext2: 'override' },
+        });
     });
     
     it('should allow getting property descriptors', () => {

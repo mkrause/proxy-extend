@@ -13,15 +13,24 @@ const nodeInspectCustom = Symbol.for('nodejs.util.inspect.custom');
 
 export const proxyKey = Symbol('proxy-wrapper.proxy');
 
-export const extend = (value, extension = nullObject) => {
+export const extend = (value, _extension = nullObject) => {
+    const valueType = typeof value;
+    
     let target = value;
+    let extension = _extension;
+    
+    // Check if the given value is already a proxy with extension. If so, flatten.
+    if (valueType === 'object' && value !== null && proxyKey in value) {
+        const unproxied = value[proxyKey];
+        target = unproxied.value;
+        extension = { ...unproxied.extension, ...extension };
+    }
     
     let isString = false;
     let isNumber = false;
     
     // Handle primitive values. Because a Proxy always behaves as an object, we cannot really transparently
     // "simulate" a primitive. However, we use sensible equivalents where possible.
-    const valueType = typeof value;
     if (target === undefined) {
         throw new TypeError($msg`Cannot construct proxy, given \`undefined\``);
     } else if (target === null) {
