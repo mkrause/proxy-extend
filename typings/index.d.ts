@@ -8,13 +8,13 @@ export type Extension = { [key in PropertyKey] : unknown };
 
 export type Proxied<V extends Value, E extends Extension = {}> =
     ObjectTB.Merge<
-        ObjectTB.Merge<
+        Readonly<ObjectTB.Merge<
             {
-                [proxyKey] : { value : V, extension : E },
+                [proxyKey] : Readonly<{ value : V, extension : Readonly<E> }>,
                 // [Symbol.iterator] : ...,
             },
             E
-        >,
+        >>,
         V extends null ? {}
             : V extends string ? String & { toJSON : () => string }
             : V extends number ? Number & { toJSON : () => number }

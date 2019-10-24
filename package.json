@@ -42,13 +42,13 @@
         "@babel/cli": "^7.6.4",
         "@babel/preset-env": "^7.6.3",
         "typescript": "^3.6.4",
-        "tsd": "^0.9.0",
+        "tsd": "^0.10.0",
         "mocha": "^6.2.2",
         "chai": "^4.2.0",
         "benny": "^3.6.13"
     },
     "dependencies": {
-        "ts-toolbelt": "^4.8.22",
+        "ts-toolbelt": "^4.8.23",
         "message-tag": "^0.4.1"
     }
 }
