@@ -12,7 +12,7 @@ Transparently extend any JS object, using ES6 Proxy.
 
 ## Motivation
 
-Given some existing JS value, you may want to add some information to this value without actually modifying the original. The simplest way to do so is to create a *wrapper* around the value:
+Given some existing JS value, you may want to "annotate" it with some additional information (e.g. for bookkeeping purposes), without actually modifying the original. The simplest way to do so is to create a *wrapper* around the value:
 
 ```js
 const someValue = getValue();
@@ -25,7 +25,7 @@ const someValueAnnotated = {
 
 One drawback of using a wrapper object, is that the newly annotated value now has a different interface from the original. That means that any consuming code will need to know about the wrapper and "unwrap" it to do anything with it.
 
-Another possibility is to do create a copy of the value, and set the new property on that (e.g. `{ ...someValue, status: 'ready' }`), but this has its own issues once you need to extend something more complex than a plain object: prototypes are not preserved, doesn't work with functions or primitives, "leaks" the extended properties through `ownKeys`, etc.
+Another possibility is to do create a copy of the value, and set the new property on that (e.g. `{ ...someValue, status: 'ready' }`), but this has its own issues once you need to extend something more complex than a plain object (prototypes are not preserved, need to take care to preserve non-enumerable properties, doesn't work with functions or primitives, etc.)
 
 Using [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), we can make the wrapper have the same interface as the original value, allowing us to pass the wrapped value to any consuming code without the consumer needing to know whether it has been proxied or not.
 
@@ -53,7 +53,7 @@ userExtended.name; // 'John'
 userExtended.status; // 'ready'
 ```
 
-To make sure that we do not conflict with any existing properties on the original value, it is useful to use a [Symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol) as the key of the annotation:
+To make sure that we do not conflict with any existing properties on the original value, it is useful to use a [symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol) as the key of the annotation:
 
 ```js
 const user = { name: 'John' };
@@ -150,7 +150,7 @@ const proxy = extend(value, {
 proxy.is(value) === true;
 ```
 
-For primitives, you can use `.valueOf()`, or a constructor:
+For primitives, you can use `.valueOf()`, or cast using a constructor:
 
 ```js
 const proxyString = extend('foo');
