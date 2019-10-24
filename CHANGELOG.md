@@ -1,6 +1,9 @@
 
 # Changelog
 
+- v0.5.x
+  - Flatten nested proxies (prevent proxying something which is already a proxy).
+
 - v0.4.x
   - Make handler a plain object (rather than using `Object.create()`) for a \~10x boost in perf.
 
