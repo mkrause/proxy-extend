@@ -1,8 +1,11 @@
 
 # proxy-extend
 
-[![npm](https://img.shields.io/npm/v/proxy-extend.svg)](https://www.npmjs.com/package/proxy-extend)
-[![Travis](https://img.shields.io/travis/mkrause/proxy-extend.svg)](https://travis-ci.org/mkrause/proxy-extend)
+[![npm](https://img.shields.io/npm/v/proxy-extend.svg?style=flat-square)](https://www.npmjs.com/package/proxy-extend)
+[![Travis](https://img.shields.io/travis/mkrause/proxy-extend.svg?style=flat-square)](https://travis-ci.org/mkrause/proxy-extend)
+![MIT](https://img.shields.io/npm/l/proxy-extend?style=flat-square)
+![TypeScript](https://img.shields.io/badge/-TypeScript-blue.svg?style=flat-square)
+
 
 Transparently extend any JS object, using ES6 Proxy.
 
