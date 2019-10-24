@@ -65,7 +65,7 @@ userExtended.name; // 'John'
 userExtended[meta]; // 'some metadata'
 ```
 
-Prototypes are conserved:
+Prototypes are preserved:
 
 ```js
 class User {
