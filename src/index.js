@@ -2,7 +2,7 @@
 import $msg from 'message-tag';
 
 
-// Version of `hasOwnProperty` that doesn't conflict with an own property
+// Version of `hasOwnProperty` that doesn't conflict
 const hasOwnProperty = (obj, propKey) => Object.prototype.hasOwnProperty.call(obj, propKey);
 
 // Cache some values
@@ -13,16 +13,14 @@ const nodeInspectCustom = Symbol.for('nodejs.util.inspect.custom');
 
 export const proxyKey = Symbol('proxy-wrapper.proxy');
 
-export const extend = (value, _extension = nullObject) => {
-    const valueType = typeof value;
-    
-    let target = value;
+export const extend = (_value, _extension = nullObject) => {
+    let value = _value;
     let extension = _extension;
     
     // Check if the given value is already a proxy with extension. If so, flatten.
-    if (valueType === 'object' && value !== null && proxyKey in value) {
+    if (typeof value === 'object' && value !== null && proxyKey in value) {
         const unproxied = value[proxyKey];
-        target = unproxied.value;
+        value = unproxied.value;
         extension = { ...unproxied.extension, ...extension };
     }
     
@@ -31,9 +29,11 @@ export const extend = (value, _extension = nullObject) => {
     
     // Handle primitive values. Because a Proxy always behaves as an object, we cannot really transparently
     // "simulate" a primitive. However, we use sensible equivalents where possible.
-    if (target === undefined) {
+    const valueType = typeof value;
+    let target = value;
+    if (valueType === 'undefined') {
         throw new TypeError($msg`Cannot construct proxy, given \`undefined\``);
-    } else if (target === null) {
+    } else if (value === null) {
         target = nullObject;
     } else if (valueType === 'string') {
         target = new String(value);
@@ -74,7 +74,6 @@ export const extend = (value, _extension = nullObject) => {
         || target instanceof TypedArray;
     
     
-    // Note: make non-enumerable, so it doesn't clutter up inspectors
     const handler = {
         has(target, propKey) {
             if (hasOwnProperty(extension, propKey)) {
