@@ -85,10 +85,12 @@ Can also proxy functions and constructors:
 
 ```js
 const fn = (a, b) => a + b;
-extend(fn)(2, 3) === 5; // Works
+const fnExtended = extend(fn);
+fnExtended(2, 3) === 5; // Works
 
 class MyClass {}
-new extend(MyClass); // Works
+const MyClassExtended = extend(MyClass);
+new MyClassExtended(); // Works
 ```
 
 
