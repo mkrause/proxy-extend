@@ -19,19 +19,24 @@
     "license": "MIT",
     "repository": "https://github.com/mkrause/proxy-extend",
     "files": [
-        "src/",
-        "lib-cjs/",
-        "lib-esm/",
-        "typings/index.d.ts"
+        "./src/",
+        "./lib-cjs/",
+        "./lib-esm/",
+        "./typings/index.d.ts"
     ],
-    "es2015": "src/index.js",
-    "main": "lib-cjs/index.js",
-    "module": "lib-esm/index.js",
-    "browser": "lib-esm/index.js",
+    "es2015": "./src/index.js",
+    "main": "./lib-cjs/index.js",
+    "module": "./lib-esm/index.js",
+    "browser": "./lib-esm/index.js",
+    "exports": {
+        ".": "./lib-esm/index.mjs"
+    },
     "types": "./typings/index.d.ts",
     "scripts": {
-        "build:cjs": "NODE_ENV=production BABEL_ENV=cjs babel src --out-dir lib-cjs --source-maps inline",
-        "build:esm": "NODE_ENV=production BABEL_ENV=esm babel src --out-dir lib-esm --source-maps inline",
+        "rename:cjs": "find ./lib-cjs -name \"*.js\" -exec bash -c 'mv \"$1\" \"${1%.js}\".cjs' - '{}' \\;",
+        "build:cjs": "NODE_ENV=production BABEL_ENV=cjs babel src --out-dir lib-cjs && npm run rename:cjs",
+        "rename:esm": "find ./lib-esm -name \"*.js\" -exec bash -c 'mv \"$1\" \"${1%.js}\".mjs' - '{}' \\;",
+        "build:esm": "NODE_ENV=production BABEL_ENV=esm babel src --out-dir lib-esm && npm run rename:esm",
         "test": "NODE_ENV=development BABEL_ENV=cjs mocha --require @babel/register --recursive tests/unit && tsd && echo '[tsd] success'",
         "test:perf": "NODE_ENV=development node tests/perf",
         "prepublishOnly": "npm run build:cjs && npm run build:esm"

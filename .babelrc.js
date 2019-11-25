@@ -25,4 +25,5 @@ module.exports = {
     ],
     plugins: [
     ],
+    sourceMaps: 'inline',
 };
