@@ -145,6 +145,17 @@ export const extend = (_value, _extension = nullObject) => {
     return new Proxy(target, handler);
 };
 
+export const unwrap = proxy => {
+    if (!(proxyKey in proxy)) {
+        throw new TypeError($msg`Cannot unwrap input, expected a proxy, received: ${proxy}`);
+    }
+    
+    return proxy[proxyKey];
+};
+
+// Add some properties to `extend` as shorthand
+extend.proxyKey = proxyKey;
+extend.unwrap = unwrap;
 
 // Make formatting of proxies a little nicer
 export const registerProxyFormatter = () => {

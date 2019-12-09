@@ -1,6 +1,10 @@
 
 # Changelog
 
+- v0.6.x
+  - Implement `unwrap`.
+  - Add `unwrap` and `proxyKey` to the main export `extend`.
+
 - v0.5.x
   - Flatten nested proxies (prevent proxying something which is already a proxy).
 

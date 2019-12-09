@@ -1,7 +1,7 @@
 
 import chai, { assert, expect } from 'chai';
 
-import extend, { proxyKey } from '../../src/index.js';
+import extend, { unwrap, proxyKey } from '../../src/index.js';
 
 
 const getEnumerableKeys = obj => {
@@ -396,5 +396,23 @@ describe('extend', () => {
         
         expect(proxy).to.be.an.instanceOf(Set);
         expect(proxy.has(2)).to.equal(true);
+    });
+});
+
+describe('unwrap', () => {
+    it('should fail on non-proxy', () => {
+        expect(() => unwrap()).to.throw(TypeError);
+        expect(() => unwrap(null)).to.throw(TypeError);
+        expect(() => unwrap({})).to.throw(TypeError);
+    });
+    
+    it('should unwrap proxy to its constituent parts', () => {
+        const proxy = extend({ name: 'john' }, { ext: 42 });
+        
+        expect(unwrap(proxy)).to.deep.equal(proxy[proxyKey]);
+        expect(unwrap(proxy)).to.deep.equal({
+            value: { name: 'john' },
+            extension: { ext: 42 },
+        });
     });
 });
