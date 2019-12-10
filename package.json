@@ -25,9 +25,9 @@
         "typings/index.d.ts"
     ],
     "es2015": "./src/index.js",
-    "main": "./lib-cjs/index.js",
-    "module": "./lib-esm/index.js",
-    "browser": "./lib-esm/index.js",
+    "main": "./lib-cjs/index.cjs",
+    "module": "./lib-esm/index.mjs",
+    "browser": "./lib-esm/index.mjs",
     "exports": {
         ".": "./lib-esm/index.mjs"
     },
