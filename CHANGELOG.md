@@ -1,6 +1,9 @@
 
 # Changelog
 
+- v1.0.x
+  - First stable release.
+
 - v0.7.x
   - Introduce `extend.is` and `extend.unwrap`.
 
