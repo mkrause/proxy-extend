@@ -104,7 +104,12 @@ import extend from 'proxy-extend';
   extend(value, extension = {})
   ```
   Returns a proxy representing the given `value`, extended with the properties of the `extension`. If `value` is already a proxy (created using `extend`), it will flatten the result to prevent nested proxies.
-  
+
+* ```js
+  extend.is(value)
+  ```
+  Check if the given value has been extended.
+
 * ```js
   extend.unwrap(extendedValue)
   ```
