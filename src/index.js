@@ -183,7 +183,7 @@ export const registerProxyFormatter = () => {
         
         window.devtoolsFormatters.push({
             header(value) {
-                if (typeof value !== 'object' || value === null || !(proxyKey in value)) {
+                if (!isProxy(value)) {
                     return null;
                 }
                 
@@ -192,6 +192,5 @@ export const registerProxyFormatter = () => {
         });
     }
 };
-
 
 export default extend;
