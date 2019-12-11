@@ -114,7 +114,7 @@ export const extend = (_value, _extension = nullObject) => {
                 }
                 */
             } else {
-                // Fallback: property is not present in either the target or extension
+                // Fallback: property is present in neither the target nor the extension
                 
                 // Implement `toJSON` for boxed primitives (otherwise `JSON.stringify` will not work properly).
                 if (propKey === 'toJSON') {
