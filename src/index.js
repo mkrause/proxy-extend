@@ -146,11 +146,7 @@ export const extend = (_value, _extension = nullObject) => {
 };
 
 export const isProxy = value => {
-    if (typeof value !== 'object' || value === null || !(proxyKey in value)) {
-        return false;
-    } else {
-        return true;
-    }
+    return typeof value === 'object' && value !== null && proxyKey in value;
 };
 
 export const unwrapProxy = proxy => {
@@ -176,7 +172,7 @@ export const registerProxyFormatter = () => {
     }
     
     // https://stackoverflow.com/questions/55733647/chrome-devtools-formatter-for-javascript-proxy
-    if (typeof window === 'object') {
+    if (typeof window === 'object' && window !== null) {
         if (!Array.isArray(window.devtoolsFormatters)) {
             window.devtoolsFormatters = [];
         }
