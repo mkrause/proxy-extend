@@ -1,7 +1,7 @@
 
 import chai, { assert, expect } from 'chai';
 
-import extend, { unwrap, proxyKey } from '../../src/index.js';
+import extend, { proxyKey, isProxy, unwrapProxy } from '../../src/index.js';
 
 
 const getEnumerableKeys = obj => {
@@ -399,18 +399,36 @@ describe('extend', () => {
     });
 });
 
-describe('unwrap', () => {
+describe('isProxy', () => {
+    it('should return false for non-proxy', () => {
+        expect(isProxy()).to.equal(false);
+        expect(isProxy(null)).to.equal(false);
+        expect(isProxy(42)).to.equal(false);
+        expect(isProxy('foo')).to.equal(false);
+        expect(isProxy({ name: 'john' })).to.equal(false);
+        expect(isProxy((x, y) => x + y)).to.equal(false);
+        expect(isProxy(new Date())).to.equal(false);
+    });
+    
+    it('should return true for proxy', () => {
+        const proxy = extend({ name: 'john' }, { ext: 42 });
+        
+        expect(isProxy(proxy)).to.equal(true);
+    });
+});
+
+describe('unwrapProxy', () => {
     it('should fail on non-proxy', () => {
-        expect(() => unwrap()).to.throw(TypeError);
-        expect(() => unwrap(null)).to.throw(TypeError);
-        expect(() => unwrap({})).to.throw(TypeError);
+        expect(() => unwrapProxy()).to.throw(TypeError);
+        expect(() => unwrapProxy(null)).to.throw(TypeError);
+        expect(() => unwrapProxy({})).to.throw(TypeError);
     });
     
     it('should unwrap proxy to its constituent parts', () => {
         const proxy = extend({ name: 'john' }, { ext: 42 });
         
-        expect(unwrap(proxy)).to.deep.equal(proxy[proxyKey]);
-        expect(unwrap(proxy)).to.deep.equal({
+        expect(unwrapProxy(proxy)).to.deep.equal(proxy[proxyKey]);
+        expect(unwrapProxy(proxy)).to.deep.equal({
             value: { name: 'john' },
             extension: { ext: 42 },
         });

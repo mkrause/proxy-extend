@@ -97,7 +97,7 @@ new MyClassExtended(); // Works
 ## API
 
 ```js
-import extend, { proxyKey } from 'proxy-extend';
+import extend from 'proxy-extend';
 ```
 
 * ```js
@@ -106,13 +106,13 @@ import extend, { proxyKey } from 'proxy-extend';
   Returns a proxy representing the given `value`, extended with the properties of the `extension`. If `value` is already a proxy (created using `extend`), it will flatten the result to prevent nested proxies.
   
 * ```js
-  proxyKey
+  extend.unwrap(extendedValue)
   ```
-  A unique symbol that can be used to retrieve the original value and extension:
+  Can be used to retrieve the original value and extension:
   
   ```js
-  proxy[proxyKey].value; // The original value
-  proxy[proxyKey].extension; // The extension object
+  extend.unwrap(proxy).value; // The original value
+  extend.unwrap(proxy).extension; // The extension object
   ```
 
 
@@ -137,17 +137,15 @@ const proxy = extend(value);
 value !== proxy; // Reference equality does not hold
 ```
 
-Instead, you can use `proxyKey` to access the original value:
+Instead, you can use `extend.unwrap` to access the original value:
 
 ```js
-import extend, { proxyKey } from 'proxy-extend';
-
-proxy[proxyKey].value === value;
+extend.unwrap(proxy).value === value;
 
 // Or, you may want to add a convenience method:
 const value = { x: 42 };
 const proxy = extend(value, {
-    is(other) { return this[proxyKey].value === other; },
+    is(other) { return extend.unwrap(this).value === other; },
 });
 proxy.is(value) === true;
 ```

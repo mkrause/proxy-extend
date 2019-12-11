@@ -1,6 +1,9 @@
 
 # Changelog
 
+- v0.7.x
+  - Introduce `extend.is` and `extend.unwrap`.
+
 - v0.6.x
   - Implement `unwrap`.
   - Add `unwrap` and `proxyKey` to the main export `extend`.

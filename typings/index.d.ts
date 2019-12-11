@@ -22,15 +22,17 @@ export type Proxied<V extends Value, E extends Extension = {}> =
             : V
     >;
 
-export declare const unwrap : <V extends Value, E extends Extension>(proxy : Proxied<V, E>) => {
+export declare const isProxy : (value : unknown) => boolean;
+
+export declare const unwrapProxy : <V extends Value, E extends Extension>(proxy : Proxied<V, E>) => {
     value : V,
     extension : E,
 };
 
 export declare const extend :
     (<V extends Value, E extends Extension = {}>(value : V, extension ?: E) => Proxied<V, E>) & {
-        proxyKey : typeof proxyKey,
-        unwrap : typeof unwrap,
+        is : typeof isProxy,
+        unwrap : typeof unwrapProxy,
     };
 
 export declare const registerProxyFormatter : () => void;
