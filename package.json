@@ -56,7 +56,7 @@
         "benny": "^3.6.14"
     },
     "dependencies": {
-        "ts-toolbelt": "^4.12.13",
+        "ts-toolbelt": "^4.13.5",
         "message-tag": "^0.4.2"
     }
 }
