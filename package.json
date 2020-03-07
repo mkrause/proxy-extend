@@ -24,9 +24,9 @@
         "lib-esm/",
         "typings/index.d.ts"
     ],
-    "type": "module",
     "main": "./lib-cjs/index.cjs",
     "module": "./lib-esm/index.mjs",
+    "__type": "module",
     "__exports": {
         "//": "Disabled until conditional exports are supported in Node without experimental flag (otherwise we cannot support both CommonJS and ESM)",
         ".": {

@@ -10,3 +10,4 @@ node_js:
     # https://bugs.chromium.org/p/v8/issues/detail?id=9781
     - '12.11'
     - '12'
+    - '13'
