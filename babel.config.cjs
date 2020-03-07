@@ -2,7 +2,7 @@
 const target = process.env.BABEL_ENV || 'esm';
 
 module.exports = babel => {
-    //babel.cache(false);
+    babel.cache(false);
     
     return {
         presets: [
