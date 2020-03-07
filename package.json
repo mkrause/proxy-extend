@@ -1,6 +1,6 @@
 {
     "name": "proxy-extend",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Transparently extend a JS object with additional properties (using ES6 Proxy)",
     "keywords": [
         "es6",
