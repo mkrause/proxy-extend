@@ -1,6 +1,9 @@
 
 # Changelog
 
+- v1.1.x
+  - Improve type definitions.
+
 - v1.0.x
   - First stable release.
 

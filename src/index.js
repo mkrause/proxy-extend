@@ -17,6 +17,10 @@ export const extend = (_value, _extension = nullObject) => {
     let value = _value;
     let extension = _extension;
     
+    if (typeof extension !== 'object' || extension === null) {
+        throw new TypeError($msg`Extension must be an object, given ${extension}`);
+    }
+    
     // Check if the given value is already a proxy with extension. If so, flatten.
     if (typeof value === 'object' && value !== null && proxyKey in value) {
         const unproxied = value[proxyKey];
@@ -92,7 +96,7 @@ export const extend = (_value, _extension = nullObject) => {
         },
         
         get(target, propKey, receiver) {
-            // Backdoor to get the original value, and the extension.
+            // Backdoor to get the internal proxied data (value and extension).
             // Note: use `value` here, not `target` (target is just an internal representation).
             if (propKey === proxyKey) { return { value, extension }; }
             

@@ -6,7 +6,7 @@ import { expectType, expectError } from 'tsd';
 import { Object as ObjectTB } from 'ts-toolbelt';
 
 import extend, { proxyKey } from '.';
-import { Value, Extension, Proxied } from '.'; // Types
+import { Proxyable, ProxyableExternal, Extension, Proxied } from '.'; // Types
 
 
 // Check proxying of different value types (no extension)
