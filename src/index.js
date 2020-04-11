@@ -149,10 +149,27 @@ export const extend = (_value, _extension = nullObject) => {
     return new Proxy(target, handler);
 };
 
+// Whether the given value can be proxied
+export const isProxyable = value => {
+    if (typeof value === 'object') { // Also covers the case where `value === null`
+        return true;
+    } else if (typeof value === 'function') {
+        return true;
+    } else if (typeof value === 'string') {
+        return true;
+    } else if (typeof value === 'number') {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+// Whether the given value is a proxy
 export const isProxy = value => {
     return typeof value === 'object' && value !== null && proxyKey in value;
 };
 
+// Unwrap the given proxy to access its internal data
 export const unwrapProxy = proxy => {
     if (!isProxy(proxy)) {
         throw new TypeError($msg`Cannot unwrap input, expected a proxy, received: ${proxy}`);

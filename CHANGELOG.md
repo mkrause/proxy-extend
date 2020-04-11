@@ -1,6 +1,9 @@
 
 # Changelog
 
+- v1.2.x
+  - Add type guard: `isProxyable`.
+
 - v1.1.x
   - Improve type definitions.
 

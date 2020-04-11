@@ -1,7 +1,7 @@
 
 import chai, { assert, expect } from 'chai';
 
-import extend, { proxyKey, isProxy, unwrapProxy } from '../../src/index.js';
+import extend, { proxyKey, isProxyable, isProxy, unwrapProxy } from '../../src/index.js';
 
 
 const getEnumerableKeys = obj => {
@@ -399,6 +399,31 @@ describe('extend', () => {
     });
 });
 
+describe('isProxyable', () => {
+    it('should return false for non-proxyable', () => {
+        expect(isProxyable()).to.equal(false);
+        expect(isProxyable(true)).to.equal(false);
+        expect(isProxyable(false)).to.equal(false);
+        expect(isProxyable(Symbol('foo'))).to.equal(false);
+        expect(isProxyable()).to.equal(false);
+    });
+    
+    it('should return true for proxyable', () => {
+        expect(isProxyable(null)).to.equal(true);
+        expect(isProxyable('')).to.equal(true);
+        expect(isProxyable('foo')).to.equal(true);
+        expect(isProxyable(-0)).to.equal(true);
+        expect(isProxyable(+0)).to.equal(true);
+        expect(isProxyable(42)).to.equal(true);
+        expect(isProxyable(Infinity)).to.equal(true);
+        expect(isProxyable(-Infinity)).to.equal(true);
+        expect(isProxyable({ name: 'john' })).to.equal(true);
+        expect(isProxyable([1, 2, 3])).to.equal(true);
+        expect(isProxyable((x, y) => x + y)).to.equal(true);
+        expect(isProxyable(new Date())).to.equal(true);
+    });
+});
+
 describe('isProxy', () => {
     it('should return false for non-proxy', () => {
         expect(isProxy()).to.equal(false);
@@ -406,6 +431,7 @@ describe('isProxy', () => {
         expect(isProxy(42)).to.equal(false);
         expect(isProxy('foo')).to.equal(false);
         expect(isProxy({ name: 'john' })).to.equal(false);
+        expect(isProxy([1, 2, 3])).to.equal(false);
         expect(isProxy((x, y) => x + y)).to.equal(false);
         expect(isProxy(new Date())).to.equal(false);
     });

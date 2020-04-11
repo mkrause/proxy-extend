@@ -29,6 +29,8 @@ export type Proxied<V extends Proxyable, E extends Extension = {}> =
         ProxyableExternal<V>
     >;
 
+export declare const isProxyable : (value : unknown) => value is Proxyable;
+
 export declare const isProxy : (value : unknown) => boolean;
 
 export declare const unwrapProxy : <V extends Proxyable, E extends Extension>(proxy : Proxied<V, E>) => {
