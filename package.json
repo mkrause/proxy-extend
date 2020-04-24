@@ -1,6 +1,9 @@
 {
     "name": "proxy-extend",
     "version": "1.2.0",
+    "author": "mkrause",
+    "license": "MIT",
+    "repository": "https://github.com/mkrause/proxy-extend",
     "description": "Transparently extend a JS object with additional properties (using ES6 Proxy)",
     "keywords": [
         "es6",
@@ -15,29 +18,21 @@
         "annotation",
         "typescript"
     ],
-    "author": "mkrause",
-    "license": "MIT",
-    "repository": "https://github.com/mkrause/proxy-extend",
     "files": [
         "src/",
         "lib-cjs/",
         "lib-esm/",
         "typings/index.d.ts"
     ],
+    "types": "./typings/index.d.ts",
+    "engines": {
+        "node": ">= 10.13"
+    },
     "main": "./lib-cjs/index.cjs",
     "module": "./lib-esm/index.mjs",
-    "__type": "module",
-    "__exports": {
-        "//": "Disabled until conditional exports are supported in Node without experimental flag (otherwise we cannot support both CommonJS and ESM)",
-        ".": {
-            "require": "./lib-cjs/index.cjs",
-            "default": "./lib-esm/index.mjs"
-        }
-    },
-    "types": "./typings/index.d.ts",
     "scripts": {
-        "build:cjs": "NODE_ENV=production BABEL_ENV=cjs babel src --out-dir=lib-cjs --out-file-extension=.cjs",
-        "build:esm": "NODE_ENV=production BABEL_ENV=esm babel src --out-dir=lib-esm --out-file-extension=.mjs",
+        "build:cjs": "rm -rf ./lib-cjs && NODE_ENV=production BABEL_ENV=cjs babel src --out-dir=lib-cjs --out-file-extension=.cjs",
+        "build:esm": "rm -rf ./lib-esm && NODE_ENV=production BABEL_ENV=esm babel src --out-dir=lib-esm --out-file-extension=.mjs",
         "test": "NODE_ENV=development BABEL_ENV=cjs mocha --require @babel/register --recursive tests/unit && tsd && echo '[tsd] success'",
         "test:perf": "NODE_ENV=development node tests/perf",
         "prepublishOnly": "npm run build:cjs && npm run build:esm"
@@ -54,7 +49,7 @@
         "benny": "^3.6.14"
     },
     "dependencies": {
-        "ts-toolbelt": "^6.4.2",
-        "message-tag": "^0.4.4"
+        "ts-toolbelt": "^6.5.1",
+        "message-tag": "^0.5.1"
     }
 }

@@ -9,12 +9,15 @@ module.exports = babel => {
             ['@babel/env', {
                 targets: {
                     browsers: [
-                        'node 8.9', // Support Node v8.9 LTS (Carbon)
+                        'node 10.13', // Support Node v10.13 LTS (Dubnium) or higher
+                        'last 2 Chrome versions',
+                        'last 2 Firefox versions',
+                        'last 2 Safari versions',
+                        'last 2 Edge versions',
                         '>0.1%',
                         'not dead',
                         'not OperaMini all',
                         'not IE < 11',
-                        'last 2 Edge versions',
                     ],
                 },
                 
