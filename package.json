@@ -28,28 +28,29 @@
     "engines": {
         "node": ">= 10.13"
     },
-    "main": "./lib-cjs/index.cjs",
-    "module": "./lib-esm/index.mjs",
+    "main": "./lib-cjs/index.js",
+    "module": "./lib-esm/index.js",
     "scripts": {
-        "build:cjs": "rm -rf ./lib-cjs && NODE_ENV=production BABEL_ENV=cjs babel src --out-dir=lib-cjs --out-file-extension=.cjs",
-        "build:esm": "rm -rf ./lib-esm && NODE_ENV=production BABEL_ENV=esm babel src --out-dir=lib-esm --out-file-extension=.mjs",
+        "_build": "babel src --extensions '.js,.ts' --source-maps=true",
+        "build:cjs": "NODE_ENV=production BABEL_ENV=cjs npm run _build -- --out-dir lib-cjs --delete-dir-on-start",
+        "build:esm": "NODE_ENV=production BABEL_ENV=esm npm run _build -- --out-dir lib-esm --delete-dir-on-start",
         "test": "NODE_ENV=development BABEL_ENV=cjs mocha --require @babel/register --recursive tests/unit && tsd && echo '[tsd] success'",
         "test:perf": "NODE_ENV=development node tests/perf",
         "prepublishOnly": "npm run build:cjs && npm run build:esm"
     },
     "devDependencies": {
-        "@babel/core": "^7.9.0",
-        "@babel/register": "^7.9.0",
-        "@babel/cli": "^7.8.4",
-        "@babel/preset-env": "^7.9.5",
-        "typescript": "^3.8.3",
-        "tsd": "^0.11.0",
-        "mocha": "^7.1.1",
+        "@babel/core": "^7.11.1",
+        "@babel/register": "^7.10.5",
+        "@babel/cli": "^7.10.5",
+        "@babel/preset-env": "^7.11.0",
+        "typescript": "^3.9.7",
+        "tsd": "^0.13.1",
+        "mocha": "^8.1.1",
         "chai": "^4.2.0",
         "benny": "^3.6.14"
     },
     "dependencies": {
-        "ts-toolbelt": "^6.5.1",
-        "message-tag": "^0.5.1"
+        "ts-toolbelt": "^6.15.5",
+        "message-tag": "^0.5.3"
     }
 }
