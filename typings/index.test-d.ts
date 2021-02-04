@@ -3,7 +3,6 @@
 // Usage: `tsd`.
 
 import { expectType, expectError } from 'tsd';
-import { Object as ObjectTB } from 'ts-toolbelt';
 
 import extend, { proxyKey } from '..';
 import { Proxyable, ProxyableExternal, Extension, Proxied } from '..'; // Types
