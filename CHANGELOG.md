@@ -1,6 +1,9 @@
 
 # Changelog
 
+- v1.3.x
+  - Drop support for Node v10, and IE 11.
+
 - v1.2.x
   - Add type guard: `isProxyable`.
 
