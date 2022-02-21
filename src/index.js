@@ -46,6 +46,8 @@ export const extend = (_value, _extension = nullObject) => {
         target = new Number(value);
         isNumber = true;
     } else if (valueType === 'bigint') {
+        // TODO: we could use a boxed `BigInt` through `Object()` (e.g. `Object(42n) instanceof BigInt`):
+        // https://2ality.com/2022/02/wrapper-objects.html
         throw new TypeError($msg`Cannot construct proxy from bigint, given ${value}`);
     } else if (valueType === 'boolean') {
         // Note: we could use a boxed `Boolean`, but it would not be very useful because there's not much you can
