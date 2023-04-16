@@ -20,37 +20,55 @@
     ],
     "files": [
         "src/",
-        "lib-cjs/",
-        "lib-esm/",
-        "typings/index.d.ts"
+        "dist/"
     ],
-    "types": "./typings/index.d.ts",
     "engines": {
-        "node": ">= 12.13"
+        "node": ">= 14.15"
     },
-    "main": "./lib-cjs/index.js",
-    "module": "./lib-esm/index.js",
+    "type": "module",
+    "main": "./dist/node-cjs/proxyExtend.cjs",
+    "types": "./dist/types/proxyExtend.d.cts",
+    "exports": {
+        "./package.json": "./package.json",
+        ".": {
+            "import": {
+                "types": "./dist/types/proxyExtend.d.mts",
+                "default": "./dist/node-esm/proxyExtend.mjs"
+            },
+            "require": {
+                "types": "./dist/types/proxyExtend.d.cts",
+                "default": "./dist/node-cjs/proxyExtend.cjs"
+            },
+            "default": "./dist/node-esm/proxyExtend.mjs"
+        }
+    },
+    "sideEffects": false,
     "scripts": {
-        "_build": "babel src --extensions '.js,.ts' --source-maps=true",
-        "build:cjs": "NODE_ENV=production BABEL_ENV=cjs npm run _build -- --out-dir lib-cjs --delete-dir-on-start",
-        "build:esm": "NODE_ENV=production BABEL_ENV=esm npm run _build -- --out-dir lib-esm --delete-dir-on-start",
-        "test": "NODE_ENV=development BABEL_ENV=cjs mocha --require @babel/register --recursive tests/unit && tsd && echo '[tsd] success'",
+        "_build": "NODE_ENV=production babel src --source-maps=true --delete-dir-on-start",
+        "build:cjs": "BABEL_ENV=cjs npm run _build -- --out-dir=dist/node-cjs --out-file-extension=.cjs",
+        "build:esm": "BABEL_ENV=esm npm run _build -- --out-dir=dist/node-esm --out-file-extension=.mjs",
+        "build:types": "mkdir -p ./dist/types && cp src/proxyExtend.d.ts ./dist/types/proxyExtend.d.mts && cp src/proxyExtend.d.ts ./dist/types/proxyExtend.d.cts",
+        "build": "npm run build:esm && npm run build:cjs && npm run build:types",
+        "test:unit": "NODE_ENV=test BABEL_ENV=cjs mocha --require @babel/register --recursive tests/unit",
         "test:perf": "NODE_ENV=development node tests/perf",
-        "prepublishOnly": "npm run build:cjs && npm run build:esm"
+        "test:imports": "node tests/import-cjs.cjs && node tests/import-esm.mjs",
+        "test:types": "tsc && npm run build:types && tsd --typings=src/proxyExtend.d.ts --files=tests/proxyExtend.test-d.ts && echo '[tsd] success'",
+        "test": "npm run test:unit && npm run test:imports && npm run test:types",
+        "prepublishOnly": "npm run build && npm test"
     },
     "devDependencies": {
-        "@babel/core": "^7.15.0",
-        "@babel/register": "^7.14.5",
-        "@babel/cli": "^7.14.8",
-        "@babel/preset-env": "^7.15.0",
-        "typescript": "^4.3.5",
-        "tsd": "^0.17.0",
-        "mocha": "^9.0.3",
-        "chai": "^4.3.4",
-        "benny": "^3.6.15"
+        "@babel/core": "^7.21.4",
+        "@babel/register": "^7.21.0",
+        "@babel/cli": "^7.21.0",
+        "@babel/preset-env": "^7.21.4",
+        "typescript": "^5.0.4",
+        "tsd": "^0.28.1",
+        "mocha": "^10.2.0",
+        "chai": "^4.3.7",
+        "benny": "^3.7.1"
     },
     "dependencies": {
         "ts-toolbelt": "^9.6.0",
-        "message-tag": "^0.6.0"
+        "message-tag": "^0.10.0"
     }
 }

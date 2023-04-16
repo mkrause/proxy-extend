@@ -1,9 +1,6 @@
-# OS support
-.DS_Store
 
 # Tool support
 /node_modules/
 
 # Project
-/lib-cjs/
-/lib-esm/
+/dist/

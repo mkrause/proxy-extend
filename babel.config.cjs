@@ -5,8 +5,7 @@ module.exports = {
     targets: {
         browsers: [
             'defaults',
-            'not IE 11',
-            'node 12.13', // Support Node v12.13 LTS (Erbium) or higher
+            'node 14.15', // Support Node v14.15 (Fermium) LTS or higher
         ],
     },
     presets: [

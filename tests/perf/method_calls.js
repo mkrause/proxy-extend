@@ -1,6 +1,6 @@
 
-const b = require('benny');
-const extend = require('../..').default;
+import b from 'benny';
+import extend from '../../src/proxyExtend.js';
 
 
 b.suite(

@@ -4,8 +4,8 @@
 
 import { expectType, expectError } from 'tsd';
 
-import extend, { proxyKey } from '..';
-import { Proxyable, ProxyableExternal, Extension, Proxied } from '..'; // Types
+import extend, { proxyKey } from '../src/proxyExtend';
+import type { Proxyable, ProxyableExternal, Extension, Proxied } from '../src/proxyExtend';
 
 
 // Check proxying of different value types (no extension)
